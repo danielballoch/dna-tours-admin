@@ -22,7 +22,7 @@ export default function Home() {
               <h2 className="text-xl my-4">Please Add Driver Details:</h2>
               <div className="flex">
                 <div className="w-6/12">
-                  <label for="driver-name">Name:</label><br/>
+                  <label htmlFor="driver-name">Name:</label><br/>
                   <input id="driver-name" name="driver-name" className="w-full text-black p-1" type="text"></input>
                 </div>
                 <div className=" w-6/12 ml-5">
