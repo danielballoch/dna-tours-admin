@@ -1,18 +1,14 @@
 'use client'
 import Image from "next/image";
-import type { Metadata } from 'next'
 import Head from 'next/head'
 import { useState } from 'react'
+import { handleForm } from '@/app/lib/actions'
 
 // export const metadata: Metadata = {
 //   title: "Admin App | DNA New Zealand"
 // }
 
-function Customer({i}){
-  return(
-    <div>hello {i}</div>
-  )
-}
+
 
 
 export default function Home() {
@@ -33,7 +29,7 @@ export default function Home() {
           priority
         />
             <h1 className="text-5xl">Routing & Notifications App Demo</h1>
-            <form className="w-full mb-36">
+            <form className="w-full mb-36" action={() => handleForm()}>
               <h2 className="text-xl my-2">Please Add Driver Details:</h2>
               <div className="bg-white text-black mb-10 p-4 rounded">
                 <div className="flex" >
@@ -87,7 +83,7 @@ export default function Home() {
               </div>
 
               <div className="flex">
-              <button className="w-8/12 p-5 mt-5 rounded bg-indigo-600">Generate Route/Pickup Times</button>
+              <button type="submit" className="w-8/12 p-5 mt-5 rounded bg-indigo-600">Generate Route/Pickup Times</button>
               <button type="button" onClick={() => updateCustomers([...customers, customers[customers.length - 1] + 1])} className="grow p-5 mt-5 ml-4 bg-white text-black rounded">Add Customer</button>
               </div>
               
