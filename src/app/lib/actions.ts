@@ -9,23 +9,59 @@ const routeoptimizationClient = new RouteOptimizationClient();
 const routingClient = new RoutesClient();
 
 
-export async function handleForm(prevState: any, customers: any, formData: FormData) {
+export async function handleForm(prevState: any, formData: FormData) {
     // const rawFormData = formData.getAll('driver-name')
 
-    // const DriverData = ({
-    //     driverName: formData.get('driver-name'),
-    //     driverEmail: formData.get('driver-email'),
-    //     startLocation: formData.get('driver-start'),
-    //     endLocation: formData.get('driver-end')
-    // });
+    const DriverData = ({
+        driverName: formData.get('driver-name'),
+        driverEmail: formData.get('driver-email'),
+        startLocation: formData.get('driver-start'),
+        endLocation: formData.get('driver-end')
+    });
 
-    // console.log("Driver Data", DriverData)
-    console.log("Customers:", customers)
+    const customersString = formData.get('numberOfCustomers')?.toString()
+    console.log(customersString)
+    const customersArray = customersString?.split(',')
+    console.log(customersArray)
+    
+    const CustomerData = []
+    for(let i = 1; i < customersArray.length+1; i++){
+      const customer = ({
+      customerName: formData.get('customer'+i+"-name"),
+      customerEmail: formData.get('customer'+i+"-email"),
+      customerPickup: formData.get('customer'+i+"-pickup"),
+    })
+    CustomerData.push(customer)
+    }
+    console.log(CustomerData)
+    console.log("Driver Data", DriverData)
     console.log("formData:", formData)
-
+    console.log("test")
+    const customerStops = []
+    for(let i = 1; i < customersArray.length+1; i++){
+      customerStops.push({"address": CustomerData[i-1].customerPickup})
+    }
+    console.log(customerStops)
     try {
-        console.log("hello api", formData)
-        return { message: 'hello from api'}
+        const routeData = await routingClient.computeRoutes({
+          origin: {
+            address: DriverData.startLocation,
+          },
+          destination: {
+            address: DriverData.endLocation,
+          },
+          intermediates: customerStops,
+          optimizeWaypointOrder: true,
+        },
+        {
+          otherArgs: {
+            headers: {
+              "X-Goog-FieldMask": "routes,",
+            },
+          },
+        }
+        );
+        return {DriverData, CustomerData, customersArray, routeData}
     } catch (error){
       console.log(error)
       return {message: 'Database Error: Failed to Delete Invoice'}
@@ -134,7 +170,7 @@ export async function handleForm(prevState: any, customers: any, formData: FormD
   };
 
   // Run request
-  const response = await routingClient.computeRoutes( {
+  const response = await routingClient.computeRoutes({
     origin: {
       address: "111 Silverdale Road, Silverdale, Hamilton 3216",
     },

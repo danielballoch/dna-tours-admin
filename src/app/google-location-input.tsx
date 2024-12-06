@@ -4,7 +4,7 @@ import { useLoadScript } from "@react-google-maps/api";
 
 const libraries = ["places"];
 
-export default function AddressInput() {
+export default function AddressInput({i}) {
 
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
@@ -47,8 +47,8 @@ export default function AddressInput() {
 
     return(
         <div className="w-6/12 ml-5 pb-1">
-          <label>Pickup Location: </label><br/>
-          <input ref={inputRef} id={"customer-pickup"} name={"customer-pickup"} className="w-full text-black p-1 rounded outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" type="text"></input>
+          {i === 1? <label>Pickup Location: </label> : null}
+          <input ref={inputRef} id={"customer"+i+"-pickup"} name={"customer"+i+"-pickup"} className="w-full text-black p-1 rounded outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" type="text"></input>
         </div>
     )
 }
