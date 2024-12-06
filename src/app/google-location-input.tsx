@@ -14,10 +14,10 @@ export default function AddressInput({i}) {
     const [input, setInput] = useState({});
     const inputRef = useRef(null);
 
-    const handleChange = (event) => {
-        const {name, value} = event.target;
-        setInput((values) => ({ ...values, [name]: value }));
-      };
+    // const handleChange = (event) => {
+    //     const {name, value} = event.target;
+    //     setInput((values) => ({ ...values, [name]: value }));
+    //   };
     
     const handlePlaceChanged = async(address) => {
       if (!isLoaded) return;

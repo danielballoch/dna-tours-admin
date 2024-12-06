@@ -1,6 +1,6 @@
 'use server'
 
-import { z } from 'zod'
+// import { z } from 'zod'
 import { RouteOptimizationClient } from '@googlemaps/routeoptimization'
 import { RoutesClient } from '@googlemaps/routing'
 // import { redirect } from 'next/navigation'
@@ -155,19 +155,19 @@ export async function handleForm(prevState: any, formData: FormData) {
 
   export async function getRoute() {
 
-  let origin = {
-    "address": "1600 Amphitheatre Parkway, Mountain View, CA"
-  }
+  // const origin = {
+  //   "address": "1600 Amphitheatre Parkway, Mountain View, CA"
+  // }
 
-  let destination = {
-    "address": "450 Serra Mall, Stanford, CA 94305, USA"
-  }
+  // const destination = {
+  //   "address": "450 Serra Mall, Stanford, CA 94305, USA"
+  // }
 
     // Construct request
-  const request = {
-    origin,
-    destination,
-  };
+  // const request = {
+  //   origin,
+  //   destination,
+  // };
 
   // Run request
   const response = await routingClient.computeRoutes({
