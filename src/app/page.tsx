@@ -36,8 +36,8 @@ export default function Home() {
   const [state, formAction] = useActionState(handleForm, initialState);
   const [mapLink, setMapLink] = useState()
 
-  const [routeData, setRouteData] = useState();
-  const [routeData2, setRouteData2] = useState();
+  // const [routeData, setRouteData] = useState();
+  // const [routeData2, setRouteData2] = useState();
 
   const [input, setInput] = useState({});
   const inputRef = useRef(null);
@@ -98,28 +98,28 @@ export default function Home() {
 
 
   //optimize routes api state update
-  useEffect(() => {
-    console.log("Route Data:", routeData)
-    if (routeData){
-      for (let i = 0; i < routeData[0].routes[0].visits.length; i++){
-        console.log("Location "+ i +": ",routeData[0].routes[0].visits[i].startTime.seconds + " Seconds")
-        console.log("Arrival Time "+ i +": ",)
-      }
-    }
-  },[routeData])
+  // useEffect(() => {
+  //   console.log("Route Data:", routeData)
+  //   if (routeData){
+  //     for (let i = 0; i < routeData[0].routes[0].visits.length; i++){
+  //       console.log("Location "+ i +": ",routeData[0].routes[0].visits[i].startTime.seconds + " Seconds")
+  //       console.log("Arrival Time "+ i +": ",)
+  //     }
+  //   }
+  // },[routeData])
 
   //routes api state update
-  useEffect(() => {
-    console.log("Route Data2:", routeData2);
-    if (routeData2){
-      for (let i = 0; i < routeData2[0].routes[0].legs.length; i++){
-        console.log("~Step " + i)
-        if(i === 0){console.log("Location: " + routeData2[0].routes[0].legs[i].startLocation.latLng.latitude + "," + routeData2[0].routes[0].legs[i].startLocation.latLng.longitude)}
-        else {console.log("Location: " + routeData2[0].routes[0].legs[i].endLocation.latLng.latitude + "," + routeData2[0].routes[0].legs[i].endLocation.latLng.longitude)}
-        console.log("Distance: "+ routeData2[0].routes[0].legs[i].localizedValues.distance.text + ", Time: " + routeData2[0].routes[0].legs[i].localizedValues.duration.text)
-      }  
-    }
-  },[routeData2])
+  // useEffect(() => {
+  //   console.log("Route Data2:", routeData2);
+  //   if (routeData2){
+  //     for (let i = 0; i < routeData2[0].routes[0].legs.length; i++){
+  //       console.log("~Step " + i)
+  //       if(i === 0){console.log("Location: " + routeData2[0].routes[0].legs[i].startLocation.latLng.latitude + "," + routeData2[0].routes[0].legs[i].startLocation.latLng.longitude)}
+  //       else {console.log("Location: " + routeData2[0].routes[0].legs[i].endLocation.latLng.latitude + "," + routeData2[0].routes[0].legs[i].endLocation.latLng.longitude)}
+  //       console.log("Distance: "+ routeData2[0].routes[0].legs[i].localizedValues.distance.text + ", Time: " + routeData2[0].routes[0].legs[i].localizedValues.duration.text)
+  //     }  
+  //   }
+  // },[routeData2])
 
 
   console.log(customers)

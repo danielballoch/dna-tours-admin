@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useLoadScript } from "@react-google-maps/api";
 
 const libraries = ["places"];
@@ -11,7 +11,7 @@ export default function AddressInput({i}) {
         libraries,
     });
 
-    const [input, setInput] = useState({});
+    // const [input, setInput] = useState({});
     const inputRef = useRef(null);
 
     // const handleChange = (event) => {
@@ -24,7 +24,7 @@ export default function AddressInput({i}) {
       const place = address.getPlace()
 
       if (!place || !place.geometry) {
-        setInput({});
+        // setInput({});
         return;
       }
     };
