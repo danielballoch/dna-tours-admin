@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { useActionState, useEffect, useState, useRef } from 'react'
 import { handleForm } from '@/app/lib/actions'
 import { useLoadScript } from "@react-google-maps/api";
-import AddressInput from "../app/google-location-input"
+import AddressInput from "./google-location-input"
 
 
 // export const metadata: Metadata = {
@@ -87,9 +87,11 @@ export default function Home() {
     if(state.CustomerData){
       console.log("run?")
       let mapString = "https://www.google.co.nz/maps/dir/"+state.DriverData.startLocation;
-      for(let i = 0; i < state.customersArray.length; i++){
-        mapString += "/"+state.CustomerData[state.routeData[0].routes[0].optimizedIntermediateWaypointIndex[i]].customerPickup;
-      }
+      if(state.customersArray.length > 1){
+        for(let i = 0; i < state.customersArray.length; i++){
+          mapString += "/"+state.CustomerData[state.routeData[0].routes[0].optimizedIntermediateWaypointIndex[i]].customerPickup;
+        }
+      } else mapString += "/"+state.CustomerData[0].customerPickup;
       mapString += "/"+state.DriverData?.endLocation;
       setMapLink(mapString);
     }
@@ -239,6 +241,7 @@ export default function Home() {
                                   <span className="w-3/12 ml-5">4:00pm</span>
                         </div>
                         {state.routeData[0].routes[0].optimizedIntermediateWaypointIndex.map((order, i) => {
+                          if(order === -1){order = 0}
                           return <div key={"customer"+i}>
                                   <span className="w-3/12">{i+2}</span>
                                   <span className="w-3/12 ml-5">{state.CustomerData[order].customerName}</span>
@@ -253,7 +256,7 @@ export default function Home() {
                                   <span className="w-3/12 ml-5">4:00pm + {state.routeData[0].routes[0].localizedValues.duration.text}</span>
                         </div>
                         <div className="mt-2">
-                          <span >Number of pickups: {state.customersArray?.length}</span>
+                          <span >Number of pickups: {state.customersArray.length}</span>
                           <span className="w-3/12 ml-5">Route Duration: {state.routeData[0].routes[0].localizedValues.duration.text}</span>
                           <span className="w-3/12 ml-5">Distance: {state.routeData[0].routes[0].localizedValues.distance.text}</span>
                         </div>

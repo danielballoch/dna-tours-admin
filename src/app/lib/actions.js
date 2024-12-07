@@ -9,7 +9,7 @@ const routeoptimizationClient = new RouteOptimizationClient();
 const routingClient = new RoutesClient();
 
 
-export async function handleForm(prevState: any, formData: FormData) {
+export async function handleForm(prevState, formData) {
     // const rawFormData = formData.getAll('driver-name')
 
     const DriverData = ({
@@ -19,27 +19,31 @@ export async function handleForm(prevState: any, formData: FormData) {
         endLocation: formData.get('driver-end')
     });
 
-    const customersString = formData.get('numberOfCustomers')?.toString()
+    const customersString = formData.get('numberOfCustomers').toString()
     console.log(customersString)
-    const customersArray = customersString?.split(',')
+    const customersArray = customersString?.split(',');
     console.log(customersArray)
     
     const CustomerData = []
-    for(let i = 1; i < customersArray.length+1; i++){
-      const customer = ({
-      customerName: formData.get('customer'+i+"-name"),
-      customerEmail: formData.get('customer'+i+"-email"),
-      customerPickup: formData.get('customer'+i+"-pickup"),
-    })
-    CustomerData.push(customer)
+    if(customersArray){
+      for(let i = 1; i < customersArray.length+1; i++){
+        const customer = ({
+        customerName: formData.get('customer'+i+"-name"),
+        customerEmail: formData.get('customer'+i+"-email"),
+        customerPickup: formData.get('customer'+i+"-pickup"),
+      })
+      CustomerData.push(customer)
+    }
     }
     console.log(CustomerData)
     console.log("Driver Data", DriverData)
     console.log("formData:", formData)
     console.log("test")
     const customerStops = []
-    for(let i = 1; i < customersArray.length+1; i++){
-      customerStops.push({"address": CustomerData[i-1].customerPickup})
+    if(customersArray){
+      for(let i = 1; i < customersArray.length+1; i++){
+        customerStops.push({"address": CustomerData[i-1].customerPickup})
+      }
     }
     console.log(customerStops)
     try {
