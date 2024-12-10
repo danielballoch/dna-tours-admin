@@ -329,7 +329,7 @@ export default function Home() {
             
               <div className="bg-white text-black py-10 px-10 rounded w-full mb-40" >
               <h2 className="text-3xl font-bold mb-8 mt-4 text-slate-700">Form Results + Route API (Dynamic Data):</h2>
-                {state.DriverData !== true? 
+                {!state.DriverData ? 
                 <p>Results will load here once generated.</p>
                 : null}
                 {state.DriverData ?
