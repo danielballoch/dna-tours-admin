@@ -35,6 +35,7 @@ export default function Home() {
 
   const [state, formAction] = useActionState(handleForm, initialState);
   const [mapLink, setMapLink] = useState()
+  const [arrivalTimes, setArrivalTimes] = useState()
 
   // const [routeData, setRouteData] = useState();
   // const [routeData2, setRouteData2] = useState();
@@ -46,6 +47,121 @@ export default function Home() {
   console.log("State: ", state)
   
 
+  const setArrivalTime = () => {
+    let arrivalTimeArray = []
+    //will need to do for loop and go through each leg
+    let ArrivalHour = Math.round(Number(state.DriverData.targetArrival.slice(0,2)));
+    let ArrivalMinutes = Math.round(Number(state.DriverData.targetArrival.slice(-2)));
+    for(let i = state.routeData[0].routes[0].legs.length-1; i >= 0; i--){
+      //so this is in seconds, 60 seconds in a minutes, 60 minutes in an hour
+      let legTime = Math.round(Number(state.routeData[0].routes[0].legs[i].duration.seconds)/60);
+      console.log("leg time: ", legTime, "target min: ", ArrivalMinutes, "target hour: ", ArrivalHour)
+
+      //The first case to check is if legtime < ArrivalMinutes I can just take it away simple
+      if(legTime < ArrivalMinutes){
+        console.log("Option 1 Ran")
+        ArrivalMinutes = ArrivalMinutes-legTime;
+        if(ArrivalMinutes < 10){
+          arrivalTimeArray.push(ArrivalHour + ":" + "0"+ArrivalMinutes);
+        } else {
+          arrivalTimeArray.push(ArrivalHour + ":" + ArrivalMinutes);
+        }
+      } else {
+        //otherwise if legtime is more than ArrivalMinutes I'll need to take away an hour, but 
+        //I may need to take away more than an hour so I have to check 
+
+        //At the moment I'm creating hours and minutes and figuring out what needs to be taken away... but
+        //this doesn't account for the minutes already there.. 
+        //so for a set all case I should do that first AND then do what I'm already doing. 
+        //let's try that. 
+        if(ArrivalMinutes === legTime){
+          //The second case is if they're equal, in which case set arrival minutes 0
+          console.log("Option 2 Ran")
+          ArrivalMinutes = 0;
+          arrivalTimeArray.push(ArrivalHour + ":" + "00");
+        } 
+        else if (ArrivalMinutes - legTime < 0){
+          //The third is if ArrivalMinutes - legTime < 0
+          console.log("Option 3 Ran")
+          //first set minutes to 0 to make things simpler. 
+          console.log('legb', legTime)
+          legTime = legTime - ArrivalMinutes;
+          ArrivalMinutes = 0;
+          console.log('lega', legTime)
+          //Now the first part of leg time is taken away so arrival minutes is 0. 
+          //Now get the remainder of what needs taken away from ArrivalHour & Minutes.
+          
+          //looks like the problem is here, hours can be less than 1 but rounded up to one, then minutes returns negitive.
+          //add a check
+          let hours = 0;
+          let minutes = 0;
+          if (legTime/60 >= 1){
+            hours = Math.round(legTime/60);
+            minutes = Math.round((legTime/60 - hours)*60);
+            ArrivalHour = ArrivalHour - hours;
+            ArrivalMinutes = 60 - minutes;
+          } else {
+            //hours already === 0
+            minutes = legTime;
+            //need to add ArrivalHour - 1 since legTime is still more than minutes
+            ArrivalHour = ArrivalHour - 1;
+            ArrivalMinutes = 60 - minutes;
+          }
+          //does this work or can it still be negitive because of rounding?? test.
+          
+          console.log("before ",hours, minutes, ArrivalHour, ArrivalMinutes)
+          console.log("after ",hours, minutes, ArrivalHour, ArrivalMinutes)
+          //Now I do a similar check as option 2
+          if(ArrivalMinutes === 60){
+            console.log("option 3a outcome")
+            ArrivalMinutes = 0;
+            arrivalTimeArray.push(ArrivalHour + ":" + "00");
+          } else if (ArrivalMinutes === 0){
+            console.log("option 3b outcome")
+            arrivalTimeArray.push(ArrivalHour + ":" + "00");
+          } else if (ArrivalMinutes < 10) {
+            console.log("option 3c outcome")
+            arrivalTimeArray.push(ArrivalHour + ":" + "0"+ArrivalMinutes);
+          } else {
+            console.log("option 3d outcome")
+            arrivalTimeArray.push(ArrivalHour + ":" + ArrivalMinutes);
+          }
+        }
+      }
+    } 
+    setArrivalTimes(arrivalTimeArray);
+        
+    //     //old code
+    //     console.log("Option 2 Ran")
+    //     let hours = Math.round(legTime/60);
+    //     let minutes = Math.round((legTime/60 - hours)*60);
+    //     console.log(legTime/60, legTime/60-hours, (legTime/60 - hours)*60)
+    //     console.log("test:", hours, minutes)
+    //     //if arrival minutes - minutes > 
+    //     if(minutes < 0){
+    //       hours = hours + 1;
+    //       console.log("test2: ", ArrivalMinutes-minutes, 60 - (ArrivalMinutes-minutes))
+    //       ArrivalMinutes = 60 - (ArrivalMinutes-minutes);
+    //     } else {
+    //       ArrivalMinutes = ArrivalMinutes-minutes;
+    //     }
+    //     console.log("hours: ",hours, "minutes: ", minutes)
+    //     console.log("Arrival Hours: ", ArrivalHour)
+    //     console.log("Arrival Minutes: ", ArrivalMinutes)
+    //     ArrivalHour = ArrivalHour - hours;
+    //     arrivalTimeArray.push(ArrivalHour + ":" + ArrivalMinutes)
+    //   }
+    //   console.log("after set", ArrivalMinutes)
+    // }
+    // setArrivalTimes(arrivalTimeArray);
+    // console.log(ArrivalHour)
+    // console.log(ArrivalMinutes)
+    return(
+      console.log("arrival time", arrivalTimeArray)
+      
+
+    )
+  }
 
   const handleChange = (event) => {
     const {name, value} = event.target;
@@ -94,6 +210,7 @@ export default function Home() {
       } else mapString += "/"+state.CustomerData[0].customerPickup;
       mapString += "/"+state.DriverData?.endLocation;
       setMapLink(mapString);
+      setArrivalTime();
     }
   },[state])
   
@@ -130,25 +247,28 @@ export default function Home() {
       <Head>
         <title>Admin App | DNA New Zealand</title>
       </Head>
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start w-6/12 mx-auto">
+      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start mx-auto w-11/12 md:w-8/12">
+      <div className="flex items-center mt-12 justify-center flex-col md:flex-row md:items-end">
         <Image
-          className="dark:invert"
+          className="dark:invert ml-2"
           src="/dna-tours-logo.png"
           alt="Next.js logo"
-          width={180}
-          height={38}
+          width={178}
+          height={40}
           priority
         />
-            <h1 className="text-5xl">Routing & Notifications App Demo</h1>
+        <h1 className="text-4xl pb-12 text-center">Routing & Notifications App</h1>
+      </div>
             <form className="w-full mb-8" action={formAction}>
-              <h2 className="text-xl my-2">Please Add Driver Details:</h2>
-              <div className="bg-white text-black mb-10 p-4 rounded">
-                <div className="flex" >
-                  <div className="w-6/12">
+              
+              <div className="bg-white text-black mb-10 p-8 rounded">
+              <h2 className="text-3xl font-bold mb-8 mt-4 text-slate-700">Please Add Driver Details:</h2>
+                <div className="flex flex-col md:flex-row">
+                  <div className="w-full md:w-6/12">
                     <label htmlFor="driver-name">Name:</label><br/>
                     <input placeholder="Name" id="driver-name" name="driver-name" className="w-full text-black p-1 rounded outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" type="text"></input>
                   </div>
-                  <div className=" w-6/12 ml-5">
+                  <div className="w-full md:w-6/12 md:ml-5">
                     <label >Email:</label><br/>
                     <input placeholder="Email" id="driver-email" name="driver-email" type="text" className="w-full text-black p-1 rounded outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" ></input>
                   </div>
@@ -165,25 +285,26 @@ export default function Home() {
                   <label>Target Arrival Time: </label><br/>
                   <input id="target-arrival" name="target-arrival" type="time" className="w-full text-black p-1 rounded outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"></input>
                 </div>
-              </div>
-              <h2 className="text-xl my-2 mt-4">Please Add Customer Details:</h2>
+              {/* </div> */}
+              
               {/* <div>Hello {i}<button type="button" className="ml-5" onClick={() => updateCustomers(customers.filter(a => a !== i))}>Remove Me</button></div> */}
-              <div className="rounded bg-white py-4 my-1">
+              {/* <div className="rounded bg-white py-8 my-1 px-8"> */}
+              < h2 className="text-3xl font-bold mb-8 mt-8 text-slate-700">Please Add Customer Details:</h2>
                 {customers.map((i) => 
-                  <div key={"customer" + i} className="text-black bg-white rounded px-4 ">
+                  <div key={"customer" + i} className="text-black bg-white rounded  ">
                     {i > 1?
                     <div className="flex">
                       <button className="text-xs ml-auto text-slate-600" type="button" onClick={() => { customers.length > 1 ? updateCustomers(customers.filter(a => a !== i)) : ""}}>(remove)</button>
                     </div>
                     : null
                     }
-                    <div className="flex rounded">
-                      <div className="w-3/12 pb-1">
-                        {i === 1? <label>Name:</label>: null}
+                    <div className="flex flex-col rounded md:flex-row">
+                      <div className="w-full pb-1 md:w-3/12">
+                        {i === 1? <label >Name:</label>: null}
                         <input placeholder="Name" id={"customer"+i+"-name"} name={"customer"+i+"-name"} className="w-full text-black p-1 rounded outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" type="text"></input>
                       </div>
-                      <div className="w-3/12 ml-5 pb-1">
-                      {i === 1? <label>Email: </label> : null}
+                      <div className="w-full  pb-1 md:w-3/12 md:ml-5">
+                      {i === 1? <label >Email: </label> : null}
                         <input placeholder="Email" id={"customer"+i+"-email"} name={"customer"+i+"-email"} className="w-full text-black p-1 rounded outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" type="text"></input>
                       </div>
                       <AddressInput i={i}/>
@@ -193,20 +314,26 @@ export default function Home() {
                 )}
                 {/* add number of customers so you can loop through in api */}
                 <input type="hidden" name="numberOfCustomers" value={customers} />
-                <p className="text-black pl-4 pt-2">Total Customers: {customers.length}</p>
+                <p className="text-black pt-2">Total Customers: {customers.length}</p>
+                 {/* form buttons */}
+              <div className="flex mt-4">
+                <button type="submit" className="p-3 px-5 mt-5 rounded bg-slate-700 text-white font-bold">Generate Route/Pickup Times</button>
+                <button type="button" onClick={() => updateCustomers([...customers, customers[customers.length - 1] + 1])} className="p-3 px-5 mt-5 ml-8 font-bold text-black bg-slate-500 text-white rounded hover:bg-slate-700 transition">Add Customer</button>
+              </div>
               </div>
              
 
-                {/* form buttons */}
-              <div className="flex">
-                <button type="submit" className="w-8/12 p-5 mt-5 rounded bg-indigo-600">Generate Route/Pickup Times</button>
-                <button type="button" onClick={() => updateCustomers([...customers, customers[customers.length - 1] + 1])} className="grow p-5 mt-5 ml-4 bg-white text-black rounded">Add Customer</button>
-              </div>
+               
             </form>
 
-            <h2 className="text-xl my-2 mt-4">Form Results + Route API (Dynamic Data):</h2>
-              <div className="bg-white text-black p-4 rounded w-full" >
+            
+              <div className="bg-white text-black py-10 px-10 rounded w-full mb-40" >
+              <h2 className="text-3xl font-bold mb-8 mt-4 text-slate-700">Form Results + Route API (Dynamic Data):</h2>
+                {state.DriverData !== true? 
+                <p>Results will load here once generated.</p>
+                : null}
                 {state.DriverData ?
+                
                   <div>
                       <div className="my-5">
                         <h3 className="text-xl">Driver Details</h3>
@@ -233,12 +360,15 @@ export default function Home() {
                       </div>
                       
                       <div>
-                        <h3 className="text-xl">Optimized Route:</h3>
+                        <h3 className="text-xl mb-2">Optimized Route:</h3>
                         <div key={"customer start"}>
                                   <span className="w-3/12">1</span>
                                   <span className="w-3/12 ml-5">Start</span>
                                   <span className="w-3/12 ml-5">{state.DriverData.startLocation}</span>
-                                  <span className="w-3/12 ml-5">4:00pm</span>
+                                  {arrivalTimes? 
+                                  <span className="w-3/12 ml-5">Leave {arrivalTimes[arrivalTimes.length-1]}</span>
+                                  : null
+                                  }
                         </div>
                         {state.routeData[0].routes[0].optimizedIntermediateWaypointIndex.map((order, i) => {
                           if(order === -1){order = 0}
@@ -246,29 +376,34 @@ export default function Home() {
                                   <span className="w-3/12">{i+2}</span>
                                   <span className="w-3/12 ml-5">{state.CustomerData[order].customerName}</span>
                                   <span className="w-3/12 ml-5">{state.CustomerData[order].customerPickup}</span>
-                                  <span className="w-3/12 ml-5">+{state.routeData[0].routes[0].legs[i].localizedValues.duration.text}</span>
+                                  {arrivalTimes? 
+                                  <span className="w-3/12 ml-5">ETA {arrivalTimes[arrivalTimes.length-i-2]} ({state.routeData[0].routes[0].legs[i].localizedValues.duration.text})</span>
+                                    : null
+                                  }
                                 </div>
                         })}
                         <div key={"customer end"}>
                                   <span className="w-3/12">{state.routeData[0].routes[0].optimizedIntermediateWaypointIndex.length+2}</span>
                                   <span className="w-3/12 ml-5">End</span>
                                   <span className="w-3/12 ml-5">{state.DriverData.endLocation}</span>
-                                  <span className="w-3/12 ml-5">4:00pm + {state.routeData[0].routes[0].localizedValues.duration.text}</span>
+                                  <span className="w-3/12 ml-5">Arrival {state.DriverData.targetArrival} ({state.routeData[0].routes[0].legs[state.routeData[0].routes[0].legs.length-1].localizedValues.duration.text})</span>
                         </div>
-                        <div className="mt-2">
-                          <span >Number of pickups: {state.customersArray.length}</span>
+                        <div className="mt-2 mb-16">
+                          <span>Number of pickups: {state.customersArray.length}</span>
                           <span className="w-3/12 ml-5">Route Duration: {state.routeData[0].routes[0].localizedValues.duration.text}</span>
                           <span className="w-3/12 ml-5">Distance: {state.routeData[0].routes[0].localizedValues.distance.text}</span>
                         </div>
-                        <a className="mt-8" target="blank" href={mapLink}>Google Maps Route (CLICK)</a>
+                        <div className="flex w-full">
+                        <button type="submit" className="p-3 px-5 mt-5 rounded bg-slate-700 text-white font-bold">Send to Driver + Customers</button>
+                        <a className="p-3 px-5 mt-5 ml-8 font-bold text-black bg-slate-500 text-white rounded hover:bg-slate-700 transition" target="blank" href={mapLink}>Open Google Maps Route (CLICK)</a>
+                        </div>
+                        
                       </div>
                   </div> 
                 : null}
               </div>
                {/* form buttons */}
-               <div className="flex w-full mb-10">
-                <button type="submit" className="w-full p-5 mt-5 rounded bg-indigo-600">Send to Driver + Customers</button>
-              </div>
+               
 
               {/* <div className="bg-white text-black mb-10 p-4 rounded w-full">
                 Route API (Static Data):

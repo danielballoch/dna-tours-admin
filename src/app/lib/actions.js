@@ -16,7 +16,8 @@ export async function handleForm(prevState, formData) {
         driverName: formData.get('driver-name'),
         driverEmail: formData.get('driver-email'),
         startLocation: formData.get('driver-start'),
-        endLocation: formData.get('driver-end')
+        endLocation: formData.get('driver-end'),
+        targetArrival: formData.get('target-arrival')
     });
 
     const customersString = formData.get('numberOfCustomers').toString()

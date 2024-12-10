@@ -47,7 +47,7 @@ export default function AddressInput({i}) {
     }, [isLoaded, loadError]);
 
     return(
-        <div className="w-6/12 ml-5 pb-1">
+        <div className="w-full pb-1 md:w-6/12 md:ml-5">
           {i === 1? <label>Pickup Location:</label> : null}
           <input ref={inputRef} id={"customer"+i+"-pickup"} name={"customer"+i+"-pickup"} className="w-full text-black p-1 rounded outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600" type="text"></input>
         </div>
